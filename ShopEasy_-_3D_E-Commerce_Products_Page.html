@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopEasy - AI-Powered 3D E-Commerce Experience</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 1px;
+        }
+
+        .cart-icon {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .cart-icon:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Main Content */
+        main {
+            margin-top: 100px;
+            padding: 2rem 0;
+        }
+
+        .hero-section {
+            text-align: center;
+            color: white;
+            margin-bottom: 4rem;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .search-bar {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            transform: translateY(-2px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Filters */
+        .filters {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 1.5rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-btn {
+            background: transparent;
+            border: 2px solid #e0e6ed;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: transparent;
+            transform: translateY(-1px);
+        }
+
+        /* Products Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .product-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .product-image {
+            height: 250px;
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-image::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .product-card:nth-child(2) .product-image { background: linear-gradient(45deg, #a8edea 0%, #fed6e3 100%); }
+        .product-card:nth-child(3) .product-image { background: linear-gradient(45deg, #ffecd2 0%, #fcb69f 100%); }
+        .product-card:nth-child(4) .product-image { background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); }
+        .product-card:nth-child(5) .product-image { background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%); }
+        .product-card:nth-child(6) .product-image { background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%); }
+
+        .product-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ff4757;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .product-badge.new { background: #2ed573; }
+        .product-badge.sale { background: #ff4757; }
+
+        .product-content {
+            padding: 1.5rem;
+        }
+
+        .product-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .product-description {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .product-price {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .current-price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .original-price {
+            color: #999;
+            text-decoration: line-through;
+            font-size: 1rem;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-3d {
+            background: rgba(102, 126, 234, 0.1);
+            border: 2px solid #667eea;
+            color: #667eea;
+            padding: 0.8rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .btn-3d:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* 3D Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .viewer-3d {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Loading Animation */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Floating Elements */
+        .floating-element {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-element:nth-child(1) {
+            width: 60px;
+            height: 60px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            width: 40px;
+            height: 40px;
+            top: 60%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        .floating-element:nth-child(3) {
+            width: 80px;
+            height: 80px;
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2.5rem; }
+            .nav-links { display: none; }
+            .products-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+            .filter-row { flex-direction: column; align-items: stretch; }
+            .filter-group { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Background Elements -->
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">ShopEasy</div>
+                <ul class="nav-links">
+                    <li><a href="#" class="active">Products</a></li>
+                    <li><a href="#">Categories</a></li>
+                    <li><a href="#">3D Gallery</a></li>
+                    <li><a href="#">AI Assistant</a></li>
+                    <li><a href="#">About</a></li>
+                </ul>
+                <button class="cart-icon" onclick="showCart()">
+                    🛒
+                    <span class="cart-count">3</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Hero Section -->
+            <section class="hero-section">
+                <h1 class="hero-title">AI-Powered 3D Shopping</h1>
+                <p class="hero-subtitle">Experience products in stunning 3D before you buy</p>
+                <div class="search-bar">
+                    <input type="text" class="search-input" placeholder="Search for amazing products...">
+                </div>
+            </section>
+
+            <!-- Filters -->
+            <section class="filters">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <span>Categories:</span>
+                        <button class="filter-btn active" onclick="filterProducts('all')">All</button>
+                        <button class="filter-btn" onclick="filterProducts('electronics')">Electronics</button>
+                        <button class="filter-btn" onclick="filterProducts('fashion')">Fashion</button>
+                        <button class="filter-btn" onclick="filterProducts('home')">Home</button>
+                    </div>
+                    <div class="filter-group">
+                        <span>Sort by:</span>
+                        <button class="filter-btn" onclick="sortProducts('price')">Price</button>
+                        <button class="filter-btn" onclick="sortProducts('rating')">Rating</button>
+                        <button class="filter-btn" onclick="sortProducts('newest')">Newest</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Products Grid -->
+            <section class="products-grid" id="products-grid">
+                <div class="product-card" data-category="electronics">
+                    <div class="product-image">
+                        <div class="product-badge new">NEW</div>
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">Wireless Headphones Pro</h3>
+                        <p class="product-description">Premium noise-cancelling headphones with AI-enhanced audio processing</p>
+                        <div class="product-price">
+                            <span class="current-price">$299</span>
+                            <span class="original-price">$399</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-primary" onclick="addToCart(this)">Add to Cart</button>
+                            <button class="btn-3d" onclick="show3D('Wireless Headphones Pro')">3D View</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card" data-category="fashion">
+                    <div class="product-image">
+                        <div class="product-badge sale">SALE</div>
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">Smart Fitness Watch</h3>
+                        <p class="product-description">Advanced fitness tracking with AI health insights and 3D body scanning</p>
+                        <div class="product-price">
+                            <span class="current-price">$199</span>
+                            <span class="original-price">$249</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-primary" onclick="addToCart(this)">Add to Cart</button>
+                            <button class="btn-3d" onclick="show3D('Smart Fitness Watch')">3D View</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card" data-category="home">
+                    <div class="product-image">
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">AI Home Assistant</h3>
+                        <p class="product-description">Voice-controlled smart home hub with 3D holographic interface</p>
+                        <div class="product-price">
+                            <span class="current-price">$449</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-primary" onclick="addToCart(this)">Add to Cart</button>
+                            <button class="btn-3d" onclick="show3D('AI Home Assistant')">3D View</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card" data-category="electronics">
+                    <div class="product-image">
+                        <div class="product-badge new">NEW</div>
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">VR Gaming Headset</h3>
+                        <p class="product-description">Next-gen virtual reality with AI-powered immersive experiences</p>
+                        <div class="product-price">
+                            <span class="current-price">$599</span>
+                            <span class="original-price">$699</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-primary" onclick="addToCart(this)">Add to Cart</button>
+                            <button class="btn-3d" onclick="show3D('VR Gaming Headset')">3D View</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card" data-category="fashion">
+                    <div class="product-image">
+                        <div class="product-badge sale">SALE</div>
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">Smart Running Shoes</h3>
+                        <p class="product-description">AI-powered athletic shoes with real-time performance analytics</p>
+                        <div class="product-price">
+                            <span class="current-price">$179</span>
+                            <span class="original-price">$229</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-primary" onclick="addToCart(this)">Add to Cart</button>
+                            <button class="btn-3d" onclick="show3D('Smart Running Shoes')">3D View</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card" data-category="home">
+                    <div class="product-image">
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">3D Hologram Projector</h3>
+                        <p class="product-description">Create stunning 3D holographic displays for entertainment and education</p>
+                        <div class="product-price">
+                            <span class="current-price">$899</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-primary" onclick="addToCart(this)">Add to Cart</button>
+                            <button class="btn-3d" onclick="show3D('3D Hologram Projector')">3D View</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- 3D Viewer Modal -->
+    <div class="modal" id="modal-3d">
+        <div class="modal-content">
+            <button class="close-btn" onclick="close3D()">×</button>
+            <h2 id="modal-title">3D Product Viewer</h2>
+            <div class="viewer-3d">
+                <div style="text-align: center;">
+                    <div class="loading-spinner"></div>
+                    <p style="margin-top: 1rem;">Loading 3D Model...</p>
+                    <p style="font-size: 0.9rem; opacity: 0.7;">Drag to rotate • Scroll to zoom</p>
+                </div>
+            </div>
+            <p>Experience this product in immersive 3D. Rotate, zoom, and explore every detail before making your purchase decision.</p>
+        </div>
+    </div>
+
+    <script>
+        let cartCount = 3;
+
+        function filterProducts(category) {
+            const products = document.querySelectorAll('.product-card');
+            const buttons = document.querySelectorAll('.filter-btn');
+            
+            // Update active button
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Filter products
+            products.forEach(product => {
+                if (category === 'all' || product.dataset.category === category) {
+                    product.style.display = 'block';
+                    product.style.animation = 'fadeIn 0.5s ease';
+                } else {
+                    product.style.display = 'none';
+                }
+            });
+        }
+
+        function sortProducts(criteria) {
+            const grid = document.getElementById('products-grid');
+            const products = Array.from(grid.children);
+            
+            products.sort((a, b) => {
+                if (criteria === 'price') {
+                    const priceA = parseInt(a.querySelector('.current-price').textContent.replace('$', ''));
+                    const priceB = parseInt(b.querySelector('.current-price').textContent.replace('$', ''));
+                    return priceA - priceB;
+                } else if (criteria === 'newest') {
+                    return a.querySelector('.product-badge.new') ? -1 : 1;
+                }
+                return 0;
+            });
+            
+            products.forEach(product => grid.appendChild(product));
+        }
+
+        function addToCart(button) {
+            cartCount++;
+            document.querySelector('.cart-count').textContent = cartCount;
+            
+            // Visual feedback
+            button.innerHTML = '<span class="loading-spinner"></span>';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                button.innerHTML = 'Added! ✓';
+                button.style.background = '#2ed573';
+                
+                setTimeout(() => {
+                    button.innerHTML = 'Add to Cart';
+                    button.style.background = '';
+                    button.disabled = false;
+                }, 1500);
+            }, 1000);
+        }
+
+        function show3D(productName) {
+            const modal = document.getElementById('modal-3d');
+            const title = document.getElementById('modal-title');
+            title.textContent = `${productName} - 3D View`;
+            modal.classList.add('show');
+            
+            // Simulate 3D loading
+            setTimeout(() => {
+                const viewer = document.querySelector('.viewer-3d');
+                viewer.innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🎯</div>
+                        <p>Interactive 3D Model Ready!</p>
+                        <p style="font-size: 0.9rem; opacity: 0.7;">Drag to rotate • Scroll to zoom • Click hotspots for details</p>
+                    </div>
+                `;
+            }, 2000);
+        }
+
+        function close3D() {
+            const modal = document.getElementById('modal-3d');
+            modal.classList.remove('show');
+            
+            // Reset viewer
+            setTimeout(() => {
+                document.querySelector('.viewer-3d').innerHTML = `
+                    <div style="text-align: center;">
+                        <div class="loading-spinner"></div>
+                        <p style="margin-top: 1rem;">Loading 3D Model...</p>
+                        <p style="font-size: 0.9rem; opacity: 0.7;">Drag to rotate • Scroll to zoom</p>
+                    </div>
+                `;
+            }, 300);
+        }
+
+        function showCart() {
+            alert(`Cart contains ${cartCount} items\n\nThis would typically open a cart sidebar or modal with full cart functionality.`);
+        }
+
+        // Search functionality
+        document.querySelector('.search-input').addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase();
+            const products = document.querySelectorAll('.product-card');
+            
+            products.forEach(product => {
+                const title = product.querySelector('.product-title').textContent.toLowerCase();
+                const description = product.querySelector('.product-description').textContent.toLowerCase();
+                
+                if (title.includes(query) || description.includes(query)) {
+                    product.style.display = 'block';
+                } else {
+                    product.style.display = query === '' ? 'block' : 'none';
+                }
+            });
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('modal-3d').addEventListener('click', function(e) {
+            if (e.target === this) {
+                close3D();
+            }
+        });
+
+        // Add some CSS animation keyframes
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
